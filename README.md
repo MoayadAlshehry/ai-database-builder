@@ -1,75 +1,47 @@
-
 # AI Database Builder
 
-This project allows users to describe their project and get database design suggestions based on the description, which are then created in MySQL. The project uses Maven for dependency management and the Gemini API for database design suggestions.
+**Turn project requirements into a database proposal you can review.**
 
-## Getting Started
+A Java command-line tool that uses Gemini to propose a MySQL schema from a natural-language project brief. It validates the design and prints the SQL before any database operation. Creation requires both `--apply` and an explicit confirmation.
 
-### Prerequisites
+## Try it without an API key or database
 
-Before running the project, make sure you have the following installed:
+Requirements: Java 17 and Maven 3.9+.
 
-- **JDK 8** or higher
-- **Maven**
-- **Eclipse IDE** (recommended)
+```sh
+mvn --batch-mode verify
+java -jar target/ai-database-builder-0.1.0-SNAPSHOT.jar --example
+```
 
-### Setup
+The bundled fictional example proposes a `projects` table with an ID, title and creation timestamp. **Preview mode makes no database connection.**
 
-1. **Clone the Repository**
+## Generate a proposal
 
-   First, clone the repository to your local machine using Git.
+Export `GEMINI_API_KEY` in your shell, then run the JAR without arguments. `GEMINI_MODEL` selects the model; its default is `gemini-3.8-flash`. Check [Google's model documentation](https://ai.google.dev/gemini-api/docs/models) for availability in your account. Requests send the project description to Google's Gemini API and may consume quota.
 
-   ```bash
-   git clone https://github.com/MoayadAlshehry/ai-database-builder.git
-   ```
-   Or you can just download it from this link https://github.com/MoayadAlshehry/ai-database-builder.git
-   
-2. **Import the Project into Eclipse**
+Configuration names are documented in [`.env.example`](.env.example). The Java application reads environment variables; it does not load `.env` automatically. Never put credentials in source files.
 
-   - Open Eclipse.
-   - Go to `File` > `Import...`.
-   - Select `Maven` > `Existing Maven Projects`, then click `Next`.
-   - Browse to the cloned project directory and select it.
-   - Click `Finish`.
+## Review and create
 
-3. **Add your API Key and Database Credentials**
+You can also review a saved design:
 
-   - Replace the placeholders for the Gemini API key and MySQL credentials in `AIDatabaseBuilder.java`:
-      You can get your Gemini API key through this link https://aistudio.google.com/app/apikey
-      
-     ```java
-     private static final String API_KEY = "YOUR-API-KEY";  // Gemini API Only
-     private static final String MYSQL_USER = "YOUR-MySQL-USERNAME";  // MySQL username
-     private static final String MYSQL_PASSWORD = "YOUR-MySQL-PASSWORD";  // MySQL password
-     ```
+```sh
+java -jar target/ai-database-builder-0.1.0-SNAPSHOT.jar --design design.json
+java -jar target/ai-database-builder-0.1.0-SNAPSHOT.jar --design design.json --apply
+```
 
-4. **Build the Project with Maven**
+For creation, export `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER` and `MYSQL_PASSWORD`. Inspect the SQL and type `yes` when prompted. Use a disposable database server first. The tool creates a **new** database and stops on the first error; it does not overwrite an existing database. MySQL DDL is not transactional, so a failed run can leave partially created objects for inspection.
 
-   - Right-click the project in Eclipse > `Run As` > `Maven build`.
-   - In the dialog that appears, set the **Goals** field to `clean install` and click `Run`. This will download the dependencies and build the project.
+## Design boundaries
 
-### Running the Program
+- Names use ASCII letters, digits and underscores, up to 64 characters.
+- Types are allowlisted: common numeric/text/date types, `VARCHAR(n)` and `DECIMAL(p,s)`.
+- A proposal supports up to 50 tables and 100 columns per table.
+- Relationships, indexes, keys, constraints and migration planning require further design work; this is a schema prototyping tool.
+- A valid response is not necessarily a good data model. Review normalization and business rules yourself.
 
-1. **Navigate to the Main Program**
+## Verification
 
-   The main program file can be found here:
+Unit tests cover request escaping, response parsing, SQL validation, approval cancellation and failure handling. CI additionally creates and removes an isolated test database on a disposable MySQL service. No live Gemini request is required for tests.
 
-   ```
-   AI-Database-Builder\ai-database-builder\src\main\java\com\example\aidatabase\AIDatabaseBuilder.java
-   ```
-
-2. **Run the Program**
-
-   - Right-click `AIDatabaseBuilder.java` in Eclipse.
-   - Select `Run As` > `Java Application`.
-
-
-### How It Works
-
-- When you run the program, it asks for a project description. The description is sent to the Gemini API to generate database design suggestions.
-- If the user accepts the design, it will create a MySQL database and tables based on the suggestions.
-  
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+[License](LICENSE) · [Moayad Alshehry](https://github.com/MoayadAlshehry)
