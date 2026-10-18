@@ -1,0 +1,8 @@
+{
+  "databaseName": "example_project",
+  "tables": [{"tableName": "projects", "columns": [
+    {"columnName": "id", "type": "INT"},
+    {"columnName": "title", "type": "VARCHAR(200)"},
+    {"columnName": "created_at", "type": "DATETIME"}
+  ]}]
+}
