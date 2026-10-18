@@ -1,5 +1,7 @@
 # AI Database Builder
 
+![AI Database Builder — Requirements to schema](docs/brand/project-header.png)
+
 **Turn project requirements into a database proposal you can review.**
 
 A Java command-line tool that uses Gemini to propose a MySQL schema from a natural-language project brief. It validates the design and prints the SQL before any database operation. Creation requires both `--apply` and an explicit confirmation.
