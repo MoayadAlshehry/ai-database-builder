@@ -6,6 +6,8 @@
 
 A Java command-line tool that uses Gemini to propose a MySQL schema from a natural-language project brief. It validates the design and prints the SQL before any database operation. Creation requires both `--apply` and an explicit confirmation.
 
+![Actual offline SQL preview output](docs/brand/project-evidence.png)
+
 ## Try it without an API key or database
 
 Requirements: Java 17 and Maven 3.9+.
